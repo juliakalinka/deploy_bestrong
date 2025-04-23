@@ -22,6 +22,12 @@ stages:
     pool:
       name: Default
     steps:
+    - script: |
+        echo "Docker Test:"
+        docker ps
+      displayName: "🔍 Docker доступність"
+
+
     - task: Docker@2
       displayName: Build and push an image to container registry
       inputs:
