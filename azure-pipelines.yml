@@ -31,3 +31,39 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+- stage: Plan
+  dependsOn: Build
+  condition: |
+      or(
+        eq(variables['Build.Reason'], 'PullRequest'),
+        eq(variables['Build.SourceBranch'], 'refs/heads/main')
+      )
+  jobs:
+      - job: TerraformPlan
+        pool:
+          name: Default
+        steps:
+          - script: terraform init -reconfigure
+            workingDirectory: environment
+            displayName: "Terraform Init (Plan)"
+
+          - script: terraform plan
+            workingDirectory: environment
+            displayName: "Terraform Plan"
+
+- stage: Apply
+  dependsOn: Plan
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  jobs:
+      - job: TerraformApply
+        pool:
+          name: Default
+        steps:
+          - script: terraform init -reconfigure
+            workingDirectory: environment
+            displayName: "Terraform Init (Apply)"
+
+          - script: terraform apply -auto-approve
+            workingDirectory: environment
+            displayName: "Terraform Apply"
+
