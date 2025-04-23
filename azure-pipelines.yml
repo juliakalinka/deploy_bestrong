@@ -5,7 +5,6 @@ resources:
 - repo: self
 
 variables:
-  # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '656673e5-8d01-434d-b2f8-30ce7b1d8a24'
   imageRepository: 'jdemehw'
   containerRegistry: 'examplesolcontainerregistry.azurecr.io'
@@ -22,12 +21,7 @@ stages:
     pool:
       name: Default
     steps:
-    - script: |
-        echo "Docker Test:"
-        docker ps
-      displayName: "🔍 Docker доступність"
-
-
+  
     - task: Docker@2
       displayName: Build and push an image to container registry
       inputs:
