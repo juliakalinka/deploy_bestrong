@@ -44,11 +44,11 @@ stages:
           name: Default
         steps:
           - script: terraform init -reconfigure
-            workingDirectory: environment
+            workingDirectory: terraform
             displayName: "Terraform Init (Plan)"
 
           - script: terraform plan
-            workingDirectory: environment
+            workingDirectory: terraform
             displayName: "Terraform Plan"
 
 - stage: Apply
@@ -60,10 +60,10 @@ stages:
           name: Default
         steps:
           - script: terraform init -reconfigure
-            workingDirectory: environment
+            workingDirectory: terraform
             displayName: "Terraform Init (Apply)"
 
           - script: terraform apply -auto-approve
-            workingDirectory: environment
+            workingDirectory: terraform
             displayName: "Terraform Apply"
 
