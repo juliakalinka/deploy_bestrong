@@ -1,0 +1,83 @@
+trigger:
+  - main
+
+resources:
+  - repo: self
+
+variables:
+  dockerRegistryServiceConnection: "656673e5-8d01-434d-b2f8-30ce7b1d8a24"
+  imageRepository: "jdemehw"
+  containerRegistry: "examplesolcontainerregistry.azurecr.io"
+  dockerfilePath: "$(Build.SourcesDirectory)/Dockerfile"
+  tag: "$(Build.BuildId)"
+
+stages:
+  - stage: Build
+    displayName: Build and push stage
+    jobs:
+      - job: Build
+        displayName: Build
+        pool:
+          name: Default
+        steps:
+          - task: Docker@2
+            displayName: Build and push an image to container registry
+            inputs:
+              command: buildAndPush
+              repository: $(imageRepository)
+              dockerfile: $(dockerfilePath)
+              containerRegistry: $(dockerRegistryServiceConnection)
+              tags: |
+                $(tag)
+
+  - stage: PlanInfra
+    displayName: Terraform Plan
+    dependsOn: Build
+    jobs:
+      - job: TerraformPlan
+        displayName: Terraform Plan
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - checkout: self
+
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: "bash"
+              scriptLocation: "inlineScript"
+              inlineScript: |
+                cd terraform
+                terraform init
+                terraform plan \
+                  -var="acr_username=$(acr_username)" \
+                  -var="acr_password=$(acr_password)"
+            env:
+              acr_username: $(acr_username)
+              acr_password: $(acr_password)
+
+  - stage: DeployInfra
+    displayName: Deploy Infrastructure
+    dependsOn: PlanInfra
+    jobs:
+      - job: Terraform
+        displayName: Terraform Apply
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - checkout: self
+
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: "bash"
+              scriptLocation: "inlineScript"
+              inlineScript: |
+                cd terraform
+                terraform init
+                terraform apply -auto-approve \
+                  -var="acr_username=$(acr_username)" \
+                  -var="acr_password=$(acr_password)"
+            env:
+              acr_username: $(acr_username)
+              acr_password: $(acr_password)
