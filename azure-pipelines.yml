@@ -21,7 +21,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: Default
+      name: Default    # <-- Використовує твій локальний агент!
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -45,16 +45,16 @@ stages:
   - job: TerraformPlan
     displayName: "Terraform Plan"
     pool:
-      name: Default
+      name: Default   # <-- Теж локальний агент
     steps:
     - checkout: self
 
     - script: |
-        echo "Installing Terraform on Fedora..."
-        sudo dnf install -y dnf-plugins-core
-        sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
-        sudo dnf install -y terraform
-      displayName: 'Install Terraform (Fedora)'
+        echo "Installing Terraform..."
+        dnf install -y dnf-plugins-core
+        dnf config-manager --add-repo https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+        dnf install terraform -y
+      displayName: 'Install Terraform'
 
     - script: |
         terraform -version
@@ -77,16 +77,16 @@ stages:
   - job: TerraformApply
     displayName: "Terraform Apply"
     pool:
-      name: Default
+      name: Default   # <-- Локальний агент
     steps:
     - checkout: self
 
     - script: |
-        echo "Installing Terraform on Fedora..."
-        sudo dnf install -y dnf-plugins-core
-        sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
-        sudo dnf install -y terraform
-      displayName: 'Install Terraform (Fedora)'
+        echo "Installing Terraform..."
+        dnf install -y dnf-plugins-core
+        dnf config-manager --add-repo https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+        dnf install terraform -y
+      displayName: 'Install Terraform'
 
     - script: |
         terraform -version
