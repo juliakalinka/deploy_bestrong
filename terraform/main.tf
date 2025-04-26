@@ -37,7 +37,7 @@ resource "azurerm_linux_web_app" "dot-net-app" {
   name                = "dot-net-app"
   location            = azurerm_resource_group.main_rsg.location
   resource_group_name = azurerm_resource_group.main_rsg.name
-  service_plan_id     = azurerm_service_plan.first-plan.id
+  service_plan_id     = azurerm_app_service_plan.first-plan.id
 
   site_config {
     always_on        = true
