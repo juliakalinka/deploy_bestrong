@@ -56,17 +56,16 @@ stages:
       displayName: 'Install Terraform'
 
     - script: |
-        terraform -version
         cd terraform
-        terraform init -reconfigure
         terraform plan \
-          -var="acr_username=$(acr_username)" \
-          -var="acr_password=$(acr_password)" \
-          -var="subscription_id=$(subscription_id)" \ 
-          -var="client_id=$(client_id)" \ 
-          -var="client_secret=$(client_secret)" \
-          -var="tenant_id=$(tenant_id)"            
+        -var="acr_username=$(acr_username)" \
+        -var="acr_password=$(acr_password)" \
+        -var="subscription_id=$(subscription_id)" \
+        -var="client_id=$(client_id)" \
+        -var="client_secret=$(client_secret)" \
+        -var="tenant_id=$(tenant_id)"
       displayName: 'Terraform Init & Plan'
+
 
 - stage: TerraformApply
   displayName: "Terraform Apply"
@@ -92,14 +91,12 @@ stages:
       displayName: 'Install Terraform'
 
     - script: |
-        terraform -version
         cd terraform
-        terraform init -reconfigure
-        terraform apply -auto-approve \
-          -var="acr_username=$(acr_username)" \
-          -var="acr_password=$(acr_password)"\
-          -var="subscription_id=$(subscription_id)" \ 
-          -var="client_id=$(client_id)" \ 
-          -var="client_secret=$(client_secret)" \
-          -var="tenant_id=$(tenant_id)"   
+        terraform apply \
+        -var="acr_username=$(acr_username)" \
+        -var="acr_password=$(acr_password)" \
+        -var="subscription_id=$(subscription_id)" \
+        -var="client_id=$(client_id)" \
+        -var="client_secret=$(client_secret)" \
+        -var="tenant_id=$(tenant_id)"
       displayName: 'Terraform Init & Apply'
