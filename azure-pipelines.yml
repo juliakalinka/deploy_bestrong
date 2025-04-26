@@ -5,12 +5,14 @@ resources:
 - repo: self
 
 variables:
-  dockerRegistryServiceConnection: '656673e5-8d01-434d-b2f8-30ce7b1d8a24'
+  dockerRegistryServiceConnection: '76eb4425-e122-492c-8448-2a2a1fb75cb4'
   imageRepository: 'jdemehw'
-  containerRegistry: 'examplesolcontainerregistry.azurecr.io'
+  containerRegistry: 'bestrongexample.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
-
+  terraformVersion: '1.5.7'
+  acr_username: '$(acr_username)'
+  acr_password: '$(acr_password)'
 
 stages:
 - stage: Build
@@ -19,9 +21,8 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: Default
+      name: Default    # <-- Використовує твій локальний агент!
     steps:
-  
     - task: Docker@2
       displayName: Build and push an image to container registry
       inputs:
@@ -31,3 +32,66 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+
+- stage: TerraformPlan
+  displayName: "Terraform Plan"
+  dependsOn: Build
+  condition: |
+      or(
+        eq(variables['Build.Reason'], 'PullRequest'),
+        eq(variables['Build.SourceBranch'], 'refs/heads/main')
+      )
+  jobs:
+  - job: TerraformPlan
+    displayName: "Terraform Plan"
+    pool:
+      name: Default   # <-- Теж локальний агент
+    steps:
+    - checkout: self
+
+    - script: |
+        sudo dnf install -y dnf-plugins-core
+        sudo dnf config-manager addrepo --from-repofile=https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+        sudo dnf -y install terraform
+      displayName: 'Install Terraform'
+
+    - script: |
+        terraform -version
+        cd terraform
+        terraform init -reconfigure
+        terraform plan \
+          -var="acr_username=$(acr_username)" \
+          -var="acr_password=$(acr_password)"
+      displayName: 'Terraform Init & Plan'
+
+- stage: TerraformApply
+  displayName: "Terraform Apply"
+  dependsOn: TerraformPlan
+  condition: |
+    and(
+      succeeded('TerraformPlan'),
+      eq(variables['Build.SourceBranch'], 'refs/heads/main')
+    )
+  jobs:
+  - job: TerraformApply
+    displayName: "Terraform Apply"
+    pool:
+      name: Default   # <-- Локальний агент
+    steps:
+    - checkout: self
+
+    - script: |
+        echo "Installing Terraform..."
+        sudo dnf install -y dnf-plugins-core
+        sudo dnf config-manager addrepo --from-repofile=https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+        sudo dnf -y install terraform
+      displayName: 'Install Terraform'
+
+    - script: |
+        terraform -version
+        cd terraform
+        terraform init -reconfigure
+        terraform apply -auto-approve \
+          -var="acr_username=$(acr_username)" \
+          -var="acr_password=$(acr_password)"
+      displayName: 'Terraform Init & Apply'
