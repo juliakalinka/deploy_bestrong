@@ -5,9 +5,9 @@ resources:
 - repo: self
 
 variables:
-  dockerRegistryServiceConnection: '656673e5-8d01-434d-b2f8-30ce7b1d8a24'
+  dockerRegistryServiceConnection: '76eb4425-e122-492c-8448-2a2a1fb75cb4'
   imageRepository: 'jdemehw'
-  containerRegistry: 'examplesolcontainerregistry.azurecr.io'
+  containerRegistry: 'bestrongexample.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
   terraformVersion: '1.5.7'
