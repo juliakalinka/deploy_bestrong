@@ -18,5 +18,13 @@ variable "location" {
 variable "acr_username" {}
 variable "acr_password" {}
 variable"subscription_id"{
-  default = "a42939ef-0995-48fe-84c1-d0e0333ca1d7"
+}
+variable "tenant_id" {
+  
+}
+variable "client_id" {
+  
+}
+variable "client_secret" {
+  
 }
