@@ -41,7 +41,11 @@ resource "azurerm_linux_web_app" "dot-net-app" {
 
   site_config {
     always_on        = true
-    linux_fx_version = "DOCKER|bestrongexample.azurecr.io/samplewebapi:latest"
+    application_stack {
+      docker_image_name = "bestrongexample/jdemehw:latest"
+      docker_registry_url = "https://bestrongexample.azurecr.io"
+
+    }
   }
 
   app_settings = {
