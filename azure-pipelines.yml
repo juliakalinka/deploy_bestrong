@@ -10,7 +10,10 @@ variables:
   containerRegistry: 'examplesolcontainerregistry.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
-
+  terraformVersion: '1.5.7'
+  azureServiceConnection: 'your-azure-subscription-connection-name'
+  acr_username: '$(acr_username)'
+  acr_password: '$(acr_password)'
 
 stages:
 - stage: Build
@@ -19,9 +22,8 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: Default
+      name: Default    # <-- Використовує твій локальний агент!
     steps:
-  
     - task: Docker@2
       displayName: Build and push an image to container registry
       inputs:
@@ -31,7 +33,9 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
-- stage: Plan
+
+- stage: TerraformPlan
+  displayName: "Terraform Plan"
   dependsOn: Build
   condition: |
       or(
@@ -39,37 +43,57 @@ stages:
         eq(variables['Build.SourceBranch'], 'refs/heads/main')
       )
   jobs:
-      - job: TerraformPlan
-        pool:
-          name: Default
-        steps:
-          - script: |
-              curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-              echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-              sudo apt update && sudo apt install terraform -y
-            displayName: Install Terraform
+  - job: TerraformPlan
+    displayName: "Terraform Plan"
+    pool:
+      name: Default   # <-- Теж локальний агент
+    steps:
+    - checkout: self
 
-          - script: terraform init -reconfigure
-            workingDirectory: terraform
-            displayName: "Terraform Init (Plan)"
+    - script: |
+        echo "Installing Terraform..."
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+        echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+        sudo apt update && sudo apt install terraform -y
+      displayName: 'Install Terraform'
 
-          - script: terraform plan
-            workingDirectory: terraform
-            displayName: "Terraform Plan"
+    - script: |
+        terraform -version
+        cd terraform
+        terraform init -reconfigure
+        terraform plan \
+          -var="acr_username=$(acr_username)" \
+          -var="acr_password=$(acr_password)"
+      displayName: 'Terraform Init & Plan'
 
-- stage: Apply
-  dependsOn: Plan
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+- stage: TerraformApply
+  displayName: "Terraform Apply"
+  dependsOn: TerraformPlan
+  condition: |
+    and(
+      succeeded('TerraformPlan'),
+      eq(variables['Build.SourceBranch'], 'refs/heads/main')
+    )
   jobs:
-      - job: TerraformApply
-        pool:
-          name: Default
-        steps:
-          - script: terraform init -reconfigure
-            workingDirectory: terraform
-            displayName: "Terraform Init (Apply)"
+  - job: TerraformApply
+    displayName: "Terraform Apply"
+    pool:
+      name: Default   # <-- Локальний агент
+    steps:
+    - checkout: self
 
-          - script: terraform apply -auto-approve
-            workingDirectory: terraform
-            displayName: "Terraform Apply"
+    - script: |
+        echo "Installing Terraform..."
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+        echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+        sudo apt update && sudo apt install terraform -y
+      displayName: 'Install Terraform'
 
+    - script: |
+        terraform -version
+        cd terraform
+        terraform init -reconfigure
+        terraform apply -auto-approve \
+          -var="acr_username=$(acr_username)" \
+          -var="acr_password=$(acr_password)"
+      displayName: 'Terraform Init & Apply'
