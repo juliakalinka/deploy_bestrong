@@ -50,12 +50,9 @@ stages:
     - checkout: self
 
     - script: |
-        echo "Installing Terraform"
-        sudo dnf install -y wget unzip
-        wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-        unzip terraform_${terraformVersion}_linux_amd64.zip
-        sudo mv terraform /usr/local/bin/
-        terraform -version
+        sudo dnf install -y dnf-plugins-core
+        sudo dnf config-manager addrepo --from-repofile=https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+        sudo dnf -y install terraform
       displayName: 'Install Terraform'
 
     - script: |
@@ -85,11 +82,9 @@ stages:
 
     - script: |
         echo "Installing Terraform..."
-        sudo dnf install -y wget unzip
-        wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-        unzip terraform_${terraformVersion}_linux_amd64.zip
-        sudo mv terraform /usr/local/bin/
-        terraform -version
+        sudo dnf install -y dnf-plugins-core
+        sudo dnf config-manager addrepo --from-repofile=https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+        sudo dnf -y install terraform
       displayName: 'Install Terraform'
 
     - script: |
