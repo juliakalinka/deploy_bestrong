@@ -63,11 +63,4 @@ resource "azurerm_linux_web_app" "dot-net-app" {
     }
   }
 
-  app_settings = {
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE        = "false"
-    DOCKER_REGISTRY_SERVER_URL                 = "https://bestrongexample.azurecr.io"
-    DOCKER_REGISTRY_SERVER_USERNAME            = var.acr_username
-    DOCKER_REGISTRY_SERVER_PASSWORD            = var.acr_password
-    WEBSITES_ENABLE_CONTAINER_CONTINUOUS_DEPLOYMENT = "true" 
-      }
 }
