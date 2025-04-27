@@ -60,7 +60,7 @@ stages:
         terraform init -reconfigure
         terraform plan \
         -var="acr_username=$(acr_username)" \
-        -var="acr_password=$(acr_password)" \        
+        -var="acr_password=$(acr_password)" \
         -var="subscription_id=$(subscription_id)" \
         -var="client_id=$(client_id)" \
         -var="client_secret=$(client_secret)" \
@@ -105,10 +105,10 @@ stages:
         terraform init -reconfigure 
         terraform import azurerm_resource_group.main_rsg /subscriptions/a42939ef-0995-48fe-84c1-d0e0333ca1d7/resourceGroups/resources
         terraform apply -auto-approve \
-        -var="acr_username=$(acr_username)" \
-        -var="acr_password=$(acr_password)" \   
-        -var="subscription_id=$(subscription_id)" \
-        -var="client_id=$(client_id)" \
-        -var="client_secret=$(client_secret)" \
-        -var="tenant_id=$(tenant_id)"
+          -var="acr_username=$(acr_username)" \
+          -var="acr_password=$(acr_password)" \
+          -var="subscription_id=$(subscription_id)" \
+          -var="client_id=$(client_id)" \
+          -var="client_secret=$(client_secret)" \
+          -var="tenant_id=$(tenant_id)"
       displayName: 'Terraform Init & Apply'
