@@ -91,10 +91,19 @@ stages:
         sudo dnf -y install terraform
       displayName: 'Install Terraform'
 
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'rsg-permission'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo "Logged into Azure"
+
     - script: |
         cd terraform
         terraform -version
         terraform init -reconfigure 
+        terraform import azurerm_resource_group.main_rsg /subscriptions/a42939ef-0995-48fe-84c1-d0e0333ca1d7/resourceGroups/resources
         terraform apply -auto-approve \
         -var="acr_username=$(acr_username)" \
         -var="acr_password=$(acr_password)" \
