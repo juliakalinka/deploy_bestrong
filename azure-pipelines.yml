@@ -11,8 +11,7 @@ variables:
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
   terraformVersion: '1.5.7'
-  acr_username: '$(acr_username)'
-  acr_password: '$(acr_password)'
+
 
 stages:
 - stage: Build
@@ -57,7 +56,9 @@ stages:
 
     - script: |
         cd terraform
-        terraform plan \
+        terraform -version
+        terraform init -reconfigure
+        terraform plan  \
         -var="acr_username=$(acr_username)" \
         -var="acr_password=$(acr_password)" \
         -var="subscription_id=$(subscription_id)" \
@@ -92,6 +93,8 @@ stages:
 
     - script: |
         cd terraform
+        terraform -version
+        terraform init -reconfigure 
         terraform apply \
         -var="acr_username=$(acr_username)" \
         -var="acr_password=$(acr_password)" \
