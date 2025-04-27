@@ -91,6 +91,14 @@ stages:
         sudo dnf -y install terraform
       displayName: 'Install Terraform'
 
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'rsg-permission'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo "Logged into Azure"
+
     - script: |
         cd terraform
         terraform -version
