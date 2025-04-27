@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "4.26.0"  # Виберіть потрібну версію
+      version = "4.26.0" 
     }
   }
 }
@@ -10,6 +10,7 @@ terraform {
 
 provider "azurerm" {
   features {}
+  resource_provider_registrations = "none"
   subscription_id = var.subscription_id
   tenant_id = var.tenant_id
   client_id = var.client_id
