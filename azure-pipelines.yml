@@ -58,7 +58,7 @@ stages:
         cd terraform
         terraform -version
         terraform init -reconfigure
-        terraform plan  \
+        terraform plan -auto-approve \
         -var="acr_username=$(acr_username)" \
         -var="acr_password=$(acr_password)" \
         -var="subscription_id=$(subscription_id)" \
@@ -95,7 +95,7 @@ stages:
         cd terraform
         terraform -version
         terraform init -reconfigure 
-        terraform apply \
+        terraform apply -auto-approve \
         -var="acr_username=$(acr_username)" \
         -var="acr_password=$(acr_password)" \
         -var="subscription_id=$(subscription_id)" \
