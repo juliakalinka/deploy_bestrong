@@ -1,5 +1,5 @@
 variable "resource_group_name" {
-  default = "main-resources"
+  default = "resources"
 }
 
 variable "app_service_plan_tier" {
