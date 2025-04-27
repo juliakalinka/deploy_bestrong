@@ -55,9 +55,10 @@ stages:
       displayName: 'Install Terraform'
 
     - script: |
+        cd terraform
         terraform -version
-        terraform init -reconfigure -chdir=terraform
-        terraform plan -chdir=terraform \
+        terraform init -reconfigure
+        terraform plan  \
         -var="acr_username=$(acr_username)" \
         -var="acr_password=$(acr_password)" \
         -var="subscription_id=$(subscription_id)" \
@@ -91,9 +92,10 @@ stages:
       displayName: 'Install Terraform'
 
     - script: |
+        cd terraform
         terraform -version
-        terraform init -reconfigure -chdir=terraform
-        terraform apply -chdir=terraform \
+        terraform init -reconfigure 
+        terraform apply \
         -var="acr_username=$(acr_username)" \
         -var="acr_password=$(acr_password)" \
         -var="subscription_id=$(subscription_id)" \
