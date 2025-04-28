@@ -11,6 +11,7 @@ variables:
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
   terraformVersion: '1.5.7'
+  acr_password: '$(acr-pass)'
 
 stages:
 - stage: Build
