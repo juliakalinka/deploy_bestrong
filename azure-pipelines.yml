@@ -31,6 +31,7 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+          latest
 
 - stage: TerraformPlan
   displayName: "Terraform Plan"
