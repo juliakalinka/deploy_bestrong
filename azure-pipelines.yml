@@ -6,7 +6,7 @@ resources:
 
 variables:
   dockerRegistryServiceConnection: '76eb4425-e122-492c-8448-2a2a1fb75cb4'
-  imageRepository: 'jdemehw'
+  imageRepository: 'bestrongrepo'
   containerRegistry: 'bestrongexample.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
