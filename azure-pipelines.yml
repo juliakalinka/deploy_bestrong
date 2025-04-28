@@ -11,7 +11,6 @@ variables:
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
   terraformVersion: '1.5.7'
-  acr_password: $(acr_password)
 
 stages:
 - stage: Build
@@ -61,7 +60,7 @@ stages:
         terraform init -reconfigure -input=false -no-color
         terraform plan \
         -var="acr_username=$(acr_username)" \
-        -var="acr_password=$(acr-pass)" \
+        -var="acr_password=$(acr_password)" \
         -var="subscription_id=$(subscription_id)" \
         -var="client_id=$(client_id)" \
         -var="client_secret=$(client_secret)" \
