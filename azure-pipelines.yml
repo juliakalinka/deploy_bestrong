@@ -20,7 +20,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: Default    # <-- Використовує твій локальний агент!
+      name: Default   
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -45,7 +45,7 @@ stages:
   - job: TerraformPlan
     displayName: "Terraform Plan"
     pool:
-      name: Default   # <-- Теж локальний агент
+      name: Default   
     steps:
     - checkout: self
 
