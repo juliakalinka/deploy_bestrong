@@ -12,7 +12,6 @@ variables:
   tag: '$(Build.BuildId)'
   terraformVersion: '1.5.7'
 
-
 stages:
 - stage: Build
   displayName: Build and push stage
@@ -20,7 +19,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: Default   
+      name: Default
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -37,15 +36,15 @@ stages:
   displayName: "Terraform Plan"
   dependsOn: Build
   condition: |
-      or(
-        eq(variables['Build.Reason'], 'PullRequest'),
-        eq(variables['Build.SourceBranch'], 'refs/heads/main')
-      )
+    or(
+      eq(variables['Build.Reason'], 'PullRequest'),
+      eq(variables['Build.SourceBranch'], 'refs/heads/main')
+    )
   jobs:
   - job: TerraformPlan
     displayName: "Terraform Plan"
     pool:
-      name: Default   
+      name: Default
     steps:
     - checkout: self
 
@@ -55,19 +54,27 @@ stages:
         sudo dnf -y install terraform
       displayName: 'Install Terraform'
 
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'rsg-permission'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo "Logged into Azure"
+      displayName: 'Azure Login'
+
     - script: |
         cd terraform
         export TF_LOG=DEBUG
         terraform init -reconfigure -input=false -no-color
-        terraform plan \
-        -var="acr_username=$(acr_username)" \
-        -var="acr_password=$(acr_password)" \
-        -var="subscription_id=$(subscription_id)" \
-        -var="client_id=$(client_id)" \
-        -var="client_secret=$(client_secret)" \
-        -var="tenant_id=$(tenant_id)"
+        terraform plan -out=tfplan.out \
+          -var="acr_username=${acr_username}" \
+          -var="acr_password=${acr_password}" \
+          -var="subscription_id=${subscription_id}" \
+          -var="client_id=${client_id}" \
+          -var="client_secret=${client_secret}" \
+          -var="tenant_id=${tenant_id}"
       displayName: 'Terraform Init & Plan'
-
 
 - stage: TerraformApply
   displayName: "Terraform Apply"
@@ -81,12 +88,11 @@ stages:
   - job: TerraformApply
     displayName: "Terraform Apply"
     pool:
-      name: Default   # <-- Локальний агент
+      name: Default
     steps:
     - checkout: self
 
     - script: |
-        echo "Installing Terraform..."
         sudo dnf install -y dnf-plugins-core
         sudo dnf config-manager addrepo --from-repofile=https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
         sudo dnf -y install terraform
@@ -99,18 +105,11 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           echo "Logged into Azure"
+      displayName: 'Azure Login'
 
     - script: |
         cd terraform
         export TF_LOG=DEBUG
-        echo $(acr_password)
-        terraform init -reconfigure  -input=false -no-color
-        terraform import azurerm_resource_group.main_rsg /subscriptions/a42939ef-0995-48fe-84c1-d0e0333ca1d7/resourceGroups/mainresources
-        terraform apply -auto-approve -input=false -no-color \
-          -var="acr_username=$(acr_username)" \
-          -var="acr_password=$(acr_password)" \
-          -var="subscription_id=$(subscription_id)" \
-          -var="client_id=$(client_id)" \
-          -var="client_secret=$(client_secret)" \
-          -var="tenant_id=$(tenant_id)"
-      displayName: 'Terraform Init & Apply'
+        terraform init -reconfigure -input=false -no-color
+        terraform apply -auto-approve tfplan.out
+      displayName: 'Terraform Apply'
