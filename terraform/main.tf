@@ -23,9 +23,9 @@ resource "azurerm_resource_group" "main_rsg" {
 }
 
 resource "azurerm_service_plan" "first-plan" {
-  name                = "first-plan"
+  name                = "service-plan"
   resource_group_name = azurerm_resource_group.main_rsg.name
-  location            = azurerm_resource_group.main_rsg.location
+  location            = "North Europe"
   os_type = "Linux"
   sku_name            = "B1"
   
@@ -48,21 +48,23 @@ resource "azurerm_subnet" "default-subnet" {
 
 resource "azurerm_linux_web_app" "bestrongdot-net-app" {
   name                = "bestrongdot-net-app"
-  location            = azurerm_resource_group.main_rsg.location
+  location            = azurerm_service_plan.first-plan.location
   resource_group_name = azurerm_resource_group.main_rsg.name
   service_plan_id     = azurerm_service_plan.first-plan.id
-  
 
   site_config {
     always_on        = true
 
+
     application_stack {
-      docker_image_name = "bestrongexample/jdemehw:latest"
-      docker_registry_url = "https://bestrongexample.azurecr.io"
+      docker_image_name = "bestrongexample.azurecr.io/bestrongrepo:latest"
+      docker_registry_url    = "https://bestrongexample.azurecr.io"
       docker_registry_username = var.acr_username
       docker_registry_password = var.acr_password
-
     }
+    
   }
-
+    app_settings = {
+      WEBSITES_PORT = "80"
+  }
 }

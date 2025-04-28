@@ -1,5 +1,5 @@
 variable "resource_group_name" {
-  default = "resources"
+  default = "mainresources"
 }
 
 variable "app_service_plan_tier" {
@@ -12,7 +12,7 @@ variable "app_service_plan_size" {
 
 variable "location" {
   description = "Azure region"
-  default     = "westeurope"
+  default     = "eastus"
 }
 
 
