@@ -111,10 +111,12 @@ stages:
          -var="tenant_id=$(tenant_id)" \
          azurerm_resource_group.main_rsg /subscriptions/***/resourceGroups/mainresources
        
-        terraform apply -var="acr_password=$(acr_password)" \
-          -var="acr_username=$(acr_username)" \
-          -var="subscription_id=$(subscription_id)" \
-          -var="client_id=$(client_id)" \
-          -var="client_secret=$(client_secret)" \
-          -var="tenant_id=$(tenant_id)"
-      displayName: 'Terraform Apply'
+        terraform apply -auto-approve \
+         -var="acr_password=$(acr_password)" \
+         -var="acr_username=$(acr_username)" \
+         -var="subscription_id=$(subscription_id)" \
+         -var="client_id=$(client_id)" \
+         -var="client_secret=$(client_secret)" \
+         -var="tenant_id=$(tenant_id)"
+        DisplayName: 'Terraform Apply'
+
