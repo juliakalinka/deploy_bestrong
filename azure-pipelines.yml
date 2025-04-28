@@ -54,26 +54,17 @@ stages:
         sudo dnf -y install terraform
       displayName: 'Install Terraform'
 
-    - task: AzureCLI@2
-      inputs:
-        azureSubscription: 'rsg-permission'
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          echo "Logged into Azure"
-      displayName: 'Azure Login'
-
     - script: |
         cd terraform
         export TF_LOG=DEBUG
         terraform init -reconfigure -input=false -no-color
-        terraform plan -out=tfplan.out \
-          -var="acr_username=${acr_username}" \
-          -var="acr_password=${acr_password}" \
-          -var="subscription_id=${subscription_id}" \
-          -var="client_id=${client_id}" \
-          -var="client_secret=${client_secret}" \
-          -var="tenant_id=${tenant_id}"
+        terraform plan \
+        -var="acr_username=$(acr_username)" \
+        -var="acr_password=$(acr_password)" \
+        -var="subscription_id=$(subscription_id)" \
+        -var="client_id=$(client_id)" \
+        -var="client_secret=$(client_secret)" \
+        -var="tenant_id=$(tenant_id)"
       displayName: 'Terraform Init & Plan'
 
 - stage: TerraformApply
@@ -110,6 +101,14 @@ stages:
     - script: |
         cd terraform
         export TF_LOG=DEBUG
-        terraform init -reconfigure -input=false -no-color
-        terraform apply -auto-approve tfplan.out
+        echo $(acr_password)
+        terraform init -reconfigure  -input=false -no-color
+        terraform import azurerm_resource_group.main_rsg /subscriptions/a42939ef-0995-48fe-84c1-d0e0333ca1d7/resourceGroups/mainresources
+        terraform apply -auto-approve -input=false -no-color \
+          -var="acr_username=$(acr_username)" \
+          -var="acr_password=$(acr_password)" \
+          -var="subscription_id=$(subscription_id)" \
+          -var="client_id=$(client_id)" \
+          -var="client_secret=$(client_secret)" \
+          -var="tenant_id=$(tenant_id)"
       displayName: 'Terraform Apply'
