@@ -60,7 +60,7 @@ stages:
         terraform init -reconfigure -input=false -no-color
         terraform plan \
         -var="acr_username=$(acr_username)" \
-        -var="acr_password=$(acr_password)" \
+        -var="acr_password=$(acr-pass)" \
         -var="subscription_id=$(subscription_id)" \
         -var="client_id=$(client_id)" \
         -var="client_secret=$(client_secret)" \
@@ -101,12 +101,12 @@ stages:
     - script: |
         cd terraform
         export TF_LOG=DEBUG
-        echo $(acr_password)
+        echo $(acr-pass)
         terraform init -reconfigure  -input=false -no-color
         terraform import azurerm_resource_group.main_rsg /subscriptions/a42939ef-0995-48fe-84c1-d0e0333ca1d7/resourceGroups/mainresources
         terraform apply -auto-approve -input=false -no-color \
           -var="acr_username=$(acr_username)" \
-          -var="acr_password=$(acr_password)" \
+          -var="acr_password=$(acr-pass)" \
           -var="subscription_id=$(subscription_id)" \
           -var="client_id=$(client_id)" \
           -var="client_secret=$(client_secret)" \
