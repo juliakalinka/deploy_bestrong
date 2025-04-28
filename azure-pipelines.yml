@@ -102,8 +102,8 @@ stages:
     - script: |
         cd terraform
         export TF_LOG=DEBUG
-        echo Password: $(acr-pass)
-        terraform init -reconfigure  -input=false -no-color
+        echo Password: $(acr_password)
+        terraform init -reconfigure -var="acr_password=$(acr_password)"
         terraform import azurerm_resource_group.main_rsg /subscriptions/a42939ef-0995-48fe-84c1-d0e0333ca1d7/resourceGroups/mainresources
         terraform apply -var="acr_password=$(acr_password)" \
           -var="acr_username=$(acr_username)" \
