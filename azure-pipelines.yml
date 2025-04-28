@@ -6,7 +6,7 @@ resources:
 
 variables:
   dockerRegistryServiceConnection: '76eb4425-e122-492c-8448-2a2a1fb75cb4'
-  imageRepository: 'jdemehw'
+  imageRepository: 'bestrongrepo'
   containerRegistry: 'bestrongexample.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
@@ -31,6 +31,7 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+          latest
 
 - stage: TerraformPlan
   displayName: "Terraform Plan"
@@ -59,6 +60,8 @@ stages:
         terraform -version
         terraform init -reconfigure
         terraform plan \
+        -var="acr_username=$(acr_username)" \
+        -var="acr_password=$(acr_password)" \
         -var="subscription_id=$(subscription_id)" \
         -var="client_id=$(client_id)" \
         -var="client_secret=$(client_secret)" \
@@ -103,8 +106,10 @@ stages:
         terraform init -reconfigure 
         terraform import azurerm_resource_group.main_rsg /subscriptions/a42939ef-0995-48fe-84c1-d0e0333ca1d7/resourceGroups/resources
         terraform apply -auto-approve \
-        -var="subscription_id=$(subscription_id)" \
-        -var="client_id=$(client_id)" \
-        -var="client_secret=$(client_secret)" \
-        -var="tenant_id=$(tenant_id)"
+          -var="acr_username=$(acr_username)" \
+          -var="acr_password=$(acr_password)" \
+          -var="subscription_id=$(subscription_id)" \
+          -var="client_id=$(client_id)" \
+          -var="client_secret=$(client_secret)" \
+          -var="tenant_id=$(tenant_id)"
       displayName: 'Terraform Init & Apply'
