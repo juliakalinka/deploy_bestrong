@@ -58,7 +58,7 @@ stages:
     - script: |
         cd terraform
         terraform -version
-        terraform init -reconfigure
+        terraform init -reconfigure -input=false -no-color -verbose
         terraform plan \
         -var="acr_username=$(acr_username)" \
         -var="acr_password=$(acr_password)" \
@@ -103,9 +103,9 @@ stages:
     - script: |
         cd terraform
         terraform -version
-        terraform init -reconfigure 
-        terraform import azurerm_resource_group.main_rsg /subscriptions/a42939ef-0995-48fe-84c1-d0e0333ca1d7/resourceGroups/resources
-        terraform apply -auto-approve \
+        terraform init -reconfigure  -input=false -no-color -verbose
+        terraform import azurerm_resource_group.main_rsg /subscriptions/a42939ef-0995-48fe-84c1-d0e0333ca1d7/resourceGroups/mainresources
+        terraform apply -auto-approve -input=false -no-color -verbose \
           -var="acr_username=$(acr_username)" \
           -var="acr_password=$(acr_password)" \
           -var="subscription_id=$(subscription_id)" \
