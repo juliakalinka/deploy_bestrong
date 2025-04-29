@@ -32,5 +32,6 @@ variable "acr_username" {
   
 }
 variable "acr_password" {
-  
+  description = "The password for the ACR"
+  type        = string
 }
