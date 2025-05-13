@@ -270,8 +270,13 @@ stages:
 
           helm pull oci://$(acrUrl)/helm/$(helmChartName) --version $(chartVersion)
 
-         
-          helm upgrade --install  $(helmChartName) $(helmChartName)-$(chartVersion).tgz \
+          echo "helmChartName: $(helmChartName)"
+          echo "chartVersion: $(chartVersion)"
+          echo "acrUrl: $(acrUrl)"
+          echo "imageRepository: $(imageRepository)"
+          echo "ingressIP: $(ingressIP)"
+
+          helm install  $(helmChartName) $(helmChartName)-$(chartVersion).tgz \
             --set image.repository=$(acrUrl)/$(imageRepository) \
             --set image.tag=123 \
             --set ingress.host=$(ingressIP).nip.io \
