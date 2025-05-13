@@ -275,12 +275,12 @@ stages:
           echo "acrUrl: $(acrUrl)"
           echo "imageRepository: $(imageRepository)"
           echo "ingressIP: $(ingressIP)"
-
+          echo "buildID: $(Build.BuildId)"
           helm uninstall $(helmChartName) --namespace default || true
 
           helm install  $(helmChartName) $(helmChartName)-$(chartVersion).tgz \
             --set image.repository=$(acrUrl)/$(imageRepository) \
-            --set image.tag=123 \
+            --set image.tag=$(Build.BuildId) \
             --set ingress.host=$(ingressIP).nip.io \
             --values ./helm/values.yaml \
             --namespace default --create-namespace
