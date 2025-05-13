@@ -227,15 +227,20 @@ stages:
         script: |
           export HELM_EXPERIMENTAL_OCI=1
 
+          CHART_VERSION="1.0.0-$(Build.BuildId)"
+          CHART_NAME="bestrongapp"
+
           echo "Logging in to Helm registry with username and password"
           helm registry login $(acrUrl) \
             --username $(acrUsername) \
             --password $(acrPassword)
 
-          helm push bestrongapp-$(chartVersion).tgz oci://$(acrUrl)/helm
+          echo "Pushing Helm chart ${CHART_NAME}-${CHART_VERSION}.tgz"
+          helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://$(acrUrl)/helm
       env:
         acrUsername: $(acrUsername)
         acrPassword: $(acrPassword)
+
 
     - task: Bash@3
       displayName: 'Deploy Helm Chart from ACR to AKS'
