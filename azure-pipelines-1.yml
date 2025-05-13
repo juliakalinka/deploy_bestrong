@@ -188,6 +188,7 @@ stages:
 
     - task: Bash@3
       displayName: 'Save Ingress IP for deployment'
+      name: SaveIngressIP
       inputs:
         targetType: 'inline'
         script: |
