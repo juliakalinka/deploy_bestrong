@@ -41,6 +41,7 @@ stages:
   dependsOn: Build
   jobs:
   - job: ConfigureHTTPS
+    displayName: 'Configure HTTPS'
     pool:
       name: Default
     steps:
@@ -52,7 +53,6 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           az aks get-credentials --resource-group bestrongAKS1-rg --name bestrongAKS1
-
     - task: HelmInstaller@1
       displayName: 'Install Helm'
       inputs:
@@ -192,13 +192,15 @@ stages:
           IP=$(kubectl get service nginx-ingress-ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           echo "Ingress IP: $IP"
           echo "##vso[task.setvariable variable=ingressIP;isOutput=true]$IP"
-      name: setupJob
 
 - stage: HelmDeploy
   displayName: 'Helm Chart Deploy to AKS'
   dependsOn: SetupHTTPS
   variables:
-    ingressIP: $[ dependencies.SetupHTTPS.outputs['setupJob.ingressIP'] ]
+    ingressIP: $[ dependencies.SetupHTTPS.outputs['SetupJob.SaveIngressIp.ingressIP'] ]
+    chartVersion: '1.0.0-$(Build.BuildId)'
+    helmChartName: 'bestrongapp'
+    acrUrl: 'bestrongaks1acr1.azurecr.io'
   jobs:
   - job: DeployHelm
     pool:
