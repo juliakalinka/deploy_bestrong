@@ -192,10 +192,13 @@ stages:
           IP=$(kubectl get service nginx-ingress-ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           echo "Ingress IP: $IP"
           echo "##vso[task.setvariable variable=ingressIP;isOutput=true]$IP"
+      name: setupJob
 
 - stage: HelmDeploy
   displayName: 'Helm Chart Deploy to AKS'
   dependsOn: SetupHTTPS
+  variables:
+    ingressIP: $[ dependencies.SetupHTTPS.outputs['setupJob.ingressIP'] ]
   jobs:
   - job: DeployHelm
     pool:
@@ -261,6 +264,9 @@ stages:
 
 
           helm pull oci://$(acrUrl)/helm/$(helmChartName) --version $(chartVersion)
+
+          helm uninstall $(helmChartName) --namespace default || true
+          
           helm install $(helmChartName) $(helmChartName)-$(chartVersion).tgz \
             --set image.repository=$(acrUrl)/$(imageRepository) \
             --set image.tag=$(Build.BuildId) \
