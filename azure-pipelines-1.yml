@@ -165,12 +165,12 @@ stages:
             namespace: default
           spec:
             dnsNames:
-              - bestrong.local
+              - $(ingressIP).nip.io
             secretName: bestrong-tls-secret
             issuerRef:
               name: selfsigned-cluster-issuer
               kind: ClusterIssuer
-            commonName: bestrong.local
+            commonName: $(ingressIP).nip.io
           EOF
           
           # Apply configuration
@@ -255,7 +255,10 @@ stages:
         targetType: 'inline'
         script: |
           export HELM_EXPERIMENTAL_OCI=1
-          helm registry login $(acrUrl)
+          helm registry login $(acrUrl) \
+            --username $(acrUsername) \
+            --password $(acrPassword)
+
 
           helm pull oci://$(acrUrl)/helm/$(helmChartName) --version $(chartVersion)
           helm install $(helmChartName) $(helmChartName)-$(chartVersion).tgz \
