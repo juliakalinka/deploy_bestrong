@@ -51,7 +51,7 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az aks get-credentials --resource-group bestrongAKS-rg --name bestrongAKS
+          az aks get-credentials --resource-group bestrongAKS1-rg --name bestrongAKS1
 
     - task: HelmInstaller@1
       displayName: 'Install Helm'
@@ -75,14 +75,14 @@ stages:
         inlineScript: |
           # Create IP in MC_ resource group
           az network public-ip create \
-            --resource-group "MC_bestrongAKS-rg_bestrongAKS_westeurope" \
+            --resource-group "MC_bestrongAKS1-rg_bestrongAKS1_westeurope" \
             --name bestrong-ingress-ip \
             --sku Standard \
             --allocation-method static \
             --location westeurope
           
           # Get the created IP address
-          IP_ADDRESS=$(az network public-ip show --resource-group "MC_bestrongAKS-rg_bestrongAKS_westeurope" --name bestrong-ingress-ip --query ipAddress -o tsv)
+          IP_ADDRESS=$(az network public-ip show --resource-group "MC_bestrongAKS1-rg_bestrongAKS1_westeurope" --name bestrong-ingress-ip --query ipAddress -o tsv)
           echo "Static IP address: $IP_ADDRESS"
           echo "##vso[task.setvariable variable=staticIpAddress]$IP_ADDRESS"
 
