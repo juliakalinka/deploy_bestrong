@@ -221,21 +221,21 @@ stages:
         helmVersionToInstall: 'latest'
 
     - task: Bash@3
-      displayName: 'Package Helm Chart and Push to ACR'
+      displayName: 'Login to ACR and Push Helm Chart'
       inputs:
         targetType: 'inline'
         script: |
-          CHART_PATH="./helm"
-          CHART_FULL_NAME=$(helm show chart $CHART_PATH | grep '^name:' | awk '{print $2}')
-          helm package $CHART_PATH --version $(chartVersion) --app-version $(Build.BuildId)
-
-          echo "Logging in to ACR..."
-          az acr login --name $(acrUrl)
-
-          echo "Enabling OCI support and pushing chart to ACR..."
           export HELM_EXPERIMENTAL_OCI=1
 
-          helm push ${CHART_FULL_NAME}-$(chartVersion).tgz oci://$(acrUrl)/helm
+          echo "Logging in to Helm registry with username and password"
+          helm registry login $(acrUrl) \
+            --username $(acrUsername) \
+            --password $(acrPassword)
+
+          helm push bestrongapp-$(chartVersion).tgz oci://$(acrUrl)/helm
+      env:
+        acrUsername: $(acrUsername)
+        acrPassword: $(acrPassword)
 
     - task: Bash@3
       displayName: 'Deploy Helm Chart from ACR to AKS'
