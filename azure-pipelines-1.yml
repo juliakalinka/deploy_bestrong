@@ -147,6 +147,8 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
+          IP=$(kubectl get service nginx-ingress-ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          DOMAIN="${IP}.nip.io"
           # Create tls-deploy.yaml file
           cat <<EOF > tls-deploy.yaml
           # ClusterIssuer for selfsigned certificate
@@ -165,12 +167,12 @@ stages:
             namespace: default
           spec:
             dnsNames:
-              - $(ingressIP).nip.io
+              - ${DOMAIN}
             secretName: bestrong-tls-secret
             issuerRef:
               name: selfsigned-cluster-issuer
               kind: ClusterIssuer
-            commonName: $(ingressIP).nip.io
+            commonName: ${DOMAIN}
           EOF
           
           # Apply configuration
@@ -197,7 +199,7 @@ stages:
   displayName: 'Helm Chart Deploy to AKS'
   dependsOn: SetupHTTPS
   variables:
-    ingressIP: $[ dependencies.SetupHTTPS.outputs['SetupJob.SaveIngressIp.ingressIP'] ]
+    ingressIP: $[ stageDependencies.SetupHTTPS.ConfigureHTTPS.outputs['SaveIngressIP.ingressIP'] ]
     chartVersion: '1.0.0-$(Build.BuildId)'
     helmChartName: 'bestrongapp'
     acrUrl: 'bestrongaks1acr1.azurecr.io'
