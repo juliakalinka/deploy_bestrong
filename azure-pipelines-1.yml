@@ -221,6 +221,13 @@ stages:
         helmVersionToInstall: 'latest'
 
     - task: Bash@3
+      displayName: 'Package Helm Chart'
+      inputs:
+        targetType: 'inline'
+        script: |
+          helm package helm/ --version 1.0.0-$(Build.BuildId)
+
+    - task: Bash@3
       displayName: 'Login to ACR and Push Helm Chart'
       inputs:
         targetType: 'inline'
