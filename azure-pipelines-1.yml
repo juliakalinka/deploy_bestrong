@@ -261,7 +261,7 @@ stages:
           helm install $(helmChartName) $(helmChartName)-$(chartVersion).tgz \
             --set image.repository=$(acrUrl)/$(imageRepository) \
             --set image.tag=$(Build.BuildId) \
-            --set ingress.host=$(ingressIP) \
+            --set ingress.host=$(ingressIP).nip.io \
             --values ./helm/values.yaml \
             --namespace default --create-namespace \
             --wait
