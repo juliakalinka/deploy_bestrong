@@ -286,7 +286,7 @@ stages:
             --namespace default --create-namespace
 
           helm uninstall $(helmChartName)-canary --namespace default || true
-          helm upgrade --install bestrongapp-canary ./charts/bestrong \
+          helm install $(helmChartName)-canary $(helmChartName)-$(chartVersion).tgz \
             --set image.repository=$(acrUrl)/$(imageRepository) \
             --set image.tag=$(Build.BuildId) \
             --set ingress.host=$(ingressIP).nip.io \
