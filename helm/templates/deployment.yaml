@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}
+  name: {{ include "bestrongapp.deploymentName" . }}
   labels:
-    app: {{ .Values.labels.app }}
+    app: {{ include "bestrongapp.fullname" . }}
     tier: {{ .Values.labels.tier }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Values.labels.app }}
+      app: {{ include "bestrongapp.fullname" . }}
   template:
     metadata:
       labels:
-        app: {{ .Values.labels.app }}
+        app: {{ include "bestrongapp.fullname" . }}
         tier: {{ .Values.labels.tier }}
     spec:
       containers:
