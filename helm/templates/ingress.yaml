@@ -24,6 +24,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                  name: {{ include "bestrongapp.serviceName" . }}
+                name: {{ include "bestrongapp.serviceName" . }}
                 port:
                   number: {{ .Values.service.port }}

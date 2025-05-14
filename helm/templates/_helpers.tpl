@@ -1,5 +1,3 @@
-# _helpers.tpl
-
 {{- define "bestrongapp.fullname" -}}
 {{- printf "%s" .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
