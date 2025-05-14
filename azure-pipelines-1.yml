@@ -34,7 +34,7 @@ stages:
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
-          $(tag)
+          stable
 
 - stage: SetupHTTPS
   displayName: 'HTTPS Setup with cert-manager'
