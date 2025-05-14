@@ -34,7 +34,7 @@ stages:
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
-          stable
+          $(tag)
 
 - stage: SetupHTTPS
   displayName: 'HTTPS Setup with cert-manager'
@@ -280,7 +280,15 @@ stages:
 
           helm install  $(helmChartName) $(helmChartName)-$(chartVersion).tgz \
             --set image.repository=$(acrUrl)/$(imageRepository) \
-            --set image.tag=$(Build.BuildId) \
+            --set image.tag=stable \
             --set ingress.host=$(ingressIP).nip.io \
             --values ./helm/values.yaml \
             --namespace default --create-namespace
+
+          helm uninstall $(helmChartName)-canary --namespace default || true
+          helm upgrade --install bestrongapp-canary ./charts/bestrong \
+            --set image.repository=$(acrUrl)/$(imageRepository) \
+            --set image.tag=$(Build.BuildId) \
+            --set ingress.host=$(ingressIP).nip.io \
+            --values ./helm/values-canary.yaml \
+            --namespace default
