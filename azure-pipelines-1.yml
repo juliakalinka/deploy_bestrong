@@ -10,9 +10,9 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: $(dockerRegistryServiceConnection)
+  dockerRegistryServiceConnection: 'c89c51fd-76ad-4d67-910b-caf53403c523'
   imageRepository: 'bestrong'
-  containerRegistry: $(containerRegistry)
+  containerRegistry: 'bestrongAKSacr.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
 
@@ -32,7 +32,7 @@ stages:
         command: buildAndPush
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
-        containerRegistry: $(containerRegistry)
+        containerRegistry: 'bestrongAKSacr.azurecr.io'
         tags: |
           $(tag)
 
@@ -48,7 +48,7 @@ stages:
     - task: AzureCLI@2
       displayName: 'Get AKS Credentials'
       inputs:
-        azureSubscription: $(azureSubscription)
+        azureSubscription: '95dc02a0-c363-44c9-aa65-8b0ccb897459'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
@@ -69,7 +69,7 @@ stages:
     - task: AzureCLI@2
       displayName: 'Create Static IP Address in MC_ Resource Group'
       inputs:
-        azureSubscription: $(azureSubscription)
+        azureSubscription: '95dc02a0-c363-44c9-aa65-8b0ccb897459'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
