@@ -12,7 +12,7 @@ variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: 'c89c51fd-76ad-4d67-910b-caf53403c523'
   imageRepository: 'bestrong'
-  containerRegistry: 'bestrongAKSacr.azurecr.io'
+  containerRegistry: 'bestrongaksacr.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
 
@@ -32,7 +32,7 @@ stages:
         command: buildAndPush
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
-        containerRegistry: 'bestrongAKSacr.azurecr.io'
+        containerRegistry: 'bestrongaksacr.azurecr.io'
         tags: |
           $(tag)
 
@@ -203,7 +203,7 @@ stages:
     ingressIP: $[ stageDependencies.SetupHTTPS.ConfigureHTTPS.outputs['SaveIngressIP.ingressIP'] ]
     chartVersion: '1.0.0-$(Build.BuildId)'
     helmChartName: 'bestrongapp'
-    acrUrl: 'bestrongaks1acr1.azurecr.io'
+    acrUrl: 'bestrongaksacr.azurecr.io'
   jobs:
   - job: DeployHelm
     pool:
@@ -211,7 +211,7 @@ stages:
     variables:
       chartVersion: '1.0.0-$(Build.BuildId)'
       helmChartName: 'bestrongapp'
-      acrUrl: 'bestrongaks1acr1.azurecr.io'
+      acrUrl: 'bestrongaksacr.azurecr.io'
     steps:
 
     - task: AzureCLI@2
