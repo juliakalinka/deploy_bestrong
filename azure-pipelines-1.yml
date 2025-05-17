@@ -32,7 +32,7 @@ stages:
         command: buildAndPush
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
-        containerRegistry: 'bestrongaksacr.azurecr.io'
+        containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
 
