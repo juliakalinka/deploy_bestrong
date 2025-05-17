@@ -203,7 +203,7 @@ stages:
     ingressIP: $[ stageDependencies.SetupHTTPS.ConfigureHTTPS.outputs['SaveIngressIP.ingressIP'] ]
     chartVersion: '1.0.0-$(Build.BuildId)'
     helmChartName: 'bestrongapp'
-    acrUrl: 'bestrongAKSacr.azurecr.io'
+    acrUrl: 'bestrongaks1acr1.azurecr.io'
   jobs:
   - job: DeployHelm
     pool:
@@ -211,7 +211,7 @@ stages:
     variables:
       chartVersion: '1.0.0-$(Build.BuildId)'
       helmChartName: 'bestrongapp'
-      acrUrl: 'bestrongAKSacr.azurecr.io'
+      acrUrl: 'bestrongaks1acr1.azurecr.io'
     steps:
 
     - task: AzureCLI@2
