@@ -10,9 +10,9 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '130423f5-3824-4c30-8b89-3f3cf4428c03'
+  dockerRegistryServiceConnection: $(dockerRegistryServiceConnection)
   imageRepository: 'bestrong'
-  containerRegistry: 'bestrongaks1acr1.azurecr.io'
+  containerRegistry: $(containerRegistry)
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
 
@@ -32,7 +32,7 @@ stages:
         command: buildAndPush
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
+        containerRegistry: $(containerRegistry)
         tags: |
           $(tag)
 
@@ -69,7 +69,7 @@ stages:
     - task: AzureCLI@2
       displayName: 'Create Static IP Address in MC_ Resource Group'
       inputs:
-        azureSubscription: 'rsg-permission'
+        azureSubscription: $(azureSubscription)
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
@@ -203,7 +203,7 @@ stages:
     ingressIP: $[ stageDependencies.SetupHTTPS.ConfigureHTTPS.outputs['SaveIngressIP.ingressIP'] ]
     chartVersion: '1.0.0-$(Build.BuildId)'
     helmChartName: 'bestrongapp'
-    acrUrl: 'bestrongaks1acr1.azurecr.io'
+    acrUrl: 'bestrongAKSacr.azurecr.io'
   jobs:
   - job: DeployHelm
     pool:
@@ -211,7 +211,7 @@ stages:
     variables:
       chartVersion: '1.0.0-$(Build.BuildId)'
       helmChartName: 'bestrongapp'
-      acrUrl: 'bestrongaks1acr1.azurecr.io'
+      acrUrl: 'bestrongAKSacr.azurecr.io'
     steps:
 
     - task: AzureCLI@2
