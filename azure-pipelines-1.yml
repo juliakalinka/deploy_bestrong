@@ -99,7 +99,7 @@ stages:
           echo "Waiting for IP address to be assigned..."
           ATTEMPTS=0
           while [ $ATTEMPTS -lt 30 ]; do
-            IP=$(kubectl get service nginx-ingress-ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+            IP=$(kubectl get service nginx-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             if [ ! -z "$IP" ]; then
               echo "IP address assigned: $IP"
               break
