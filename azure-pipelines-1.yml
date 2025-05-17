@@ -217,7 +217,7 @@ stages:
     - task: AzureCLI@2
       displayName: 'Get AKS Credentials'
       inputs:
-        azureSubscription: 'rsg-permission'
+        azureSubscription: 'bestrong_deploy'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
