@@ -12,7 +12,7 @@ variables:
   # Container registry service connection established during pipeline creation
   azureSubscription: '31b20060-aec1-4e56-b03f-30dba537b067' 
   dockerRegistryServiceConnection: '702cebc9-1795-4bbc-a39a-9560fb040e49'
-  imageRepository: 'yuliakalinka/bestrong'
+  imageRepository: 'bestrong'
   containerRegistry: 'bestrongaksacr.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
@@ -281,7 +281,7 @@ stages:
 
           helm install  $(helmChartName) $(helmChartName)-$(chartVersion).tgz \
             --set image.repository=$(acrUrl)/$(imageRepository) \
-            --set image.tag=stable \
+            --set image.tag=$(Build.BuildId) \
             --set ingress.host=$(ingressIP).nip.io \
             --values ./helm/values.yaml \
             --namespace default --create-namespace
