@@ -10,10 +10,10 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  azureSubscription: '31b20060-aec1-4e56-b03f-30dba537b067' 
-  dockerRegistryServiceConnection: '702cebc9-1795-4bbc-a39a-9560fb040e49'
+  azureSubscription: 'f6447744-8533-4c2a-a53d-e4d05f668c0f' 
+  dockerRegistryServiceConnection: 'ef4aad03-97a2-44d6-acab-e3d02f519c7b'
   imageRepository: 'bestrong'
-  containerRegistry: 'bestrongaksacr.azurecr.io'
+  containerRegistry: 'bestrongaksacr333.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
 
@@ -49,11 +49,11 @@ stages:
     - task: AzureCLI@2
       displayName: 'Get AKS Credentials'
       inputs:
-        azureSubscription: 'bestrong_deploy'
+        azureSubscription: 'bestrong_deploy1'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az aks get-credentials --resource-group bestrongAKS-rg --name bestrongAKS
+          az aks get-credentials --resource-group bestrongAKS-rg --name bestrongAKS111
     - task: HelmInstaller@1
       displayName: 'Install Helm'
       inputs:
@@ -70,20 +70,20 @@ stages:
     - task: AzureCLI@2
       displayName: 'Create Static IP Address in MC_ Resource Group'
       inputs:
-        azureSubscription: 'bestrong_deploy'
+        azureSubscription: 'bestrong_deploy1'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
           # Create IP in MC_ resource group
           az network public-ip create \
-            --resource-group "MC_bestrongAKS-rg_bestrongAKS_westeurope" \
+            --resource-group "MC_bestrongAKS-rg_bestrongAKS111_westeurope" \
             --name bestrong-ingress-ip \
             --sku Standard \
             --allocation-method static \
             --location westeurope
           
           # Get the created IP address
-          IP_ADDRESS=$(az network public-ip show --resource-group "MC_bestrongAKS-rg_bestrongAKS_westeurope" --name bestrong-ingress-ip --query ipAddress -o tsv)
+          IP_ADDRESS=$(az network public-ip show --resource-group "MC_bestrongAKS-rg_bestrongAKS111_westeurope" --name bestrong-ingress-ip --query ipAddress -o tsv)
           echo "Static IP address: $IP_ADDRESS"
           echo "##vso[task.setvariable variable=staticIpAddress]$IP_ADDRESS"
 
@@ -204,7 +204,7 @@ stages:
     ingressIP: $[ stageDependencies.SetupHTTPS.ConfigureHTTPS.outputs['SaveIngressIP.ingressIP'] ]
     chartVersion: '1.0.0-$(Build.BuildId)'
     helmChartName: 'bestrongapp'
-    acrUrl: 'bestrongaksacr.azurecr.io'
+    acrUrl: 'bestrongaksacr333.azurecr.io'
   jobs:
   - job: DeployHelm
     pool:
@@ -212,13 +212,13 @@ stages:
     variables:
       chartVersion: '1.0.0-$(Build.BuildId)'
       helmChartName: 'bestrongapp'
-      acrUrl: 'bestrongaksacr.azurecr.io'
+      acrUrl: 'bestrongaksacr333.azurecr.io'
     steps:
 
     - task: AzureCLI@2
       displayName: 'Get AKS Credentials'
       inputs:
-        azureSubscription: 'bestrong_deploy'
+        azureSubscription: 'bestrong_deploy1'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
